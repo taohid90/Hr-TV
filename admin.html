@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HR TV - Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png">
+
+    <!-- Tailwind CSS & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <style>
+        body { 
+            background: #08090d; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        .admin-card {
+            background: #11131a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .admin-input {
+            background: #0c0d12;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 13px;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+        .admin-input:focus {
+            outline: none;
+            border-color: #ec4899;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);
+        }
+        .nav-btn {
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn.active {
+            color: #ffffff;
+            background: linear-gradient(90deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(236, 72, 153, 0.4);
+        }
+        .admin-page { display: none; }
+        .admin-page.active { display: block; animation: fadeIn 0.15s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-0 flex flex-col md:flex-row">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="hidden md:flex w-64 bg-[#0d0e14] border-r border-white/5 p-5 flex-col justify-between shrink-0 h-screen sticky top-0">
+        <div class="space-y-6">
+            <div class="flex items-center gap-3">
+                <img src="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png" class="w-10 h-10 rounded-2xl object-contain bg-black p-1 border border-white/10 shadow-lg shadow-pink-500/20">
+                <div>
+                    <h1 class="font-black text-base text-white tracking-wider leading-tight">HR TV</h1>
+                    <p class="text-[10px] text-pink-400 font-extrabold tracking-widest uppercase">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="space-y-1.5">
+                <button onclick="navAdmin('dashboard')" id="dtab-dashboard" class="nav-btn active w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-chart-pie text-pink-400 text-sm"></i> <span>Overview & Traffic</span>
+                </button>
+                <button onclick="navAdmin('matches')" id="dtab-matches" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-trophy text-purple-400 text-sm"></i> <span>Live Matches</span>
+                </button>
+                <button onclick="navAdmin('tv')" id="dtab-tv" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-desktop text-blue-400 text-sm"></i> <span>Live TV</span>
+                </button>
+                <button onclick="navAdmin('categories')" id="dtab-categories" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-shapes text-amber-400 text-sm"></i> <span>Categories</span>
+                </button>
+                <button onclick="navAdmin('ads')" id="dtab-ads" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-rectangle-ad text-rose-400 text-sm"></i> <span>Popunder Ads</span>
+                </button>
+                <button onclick="navAdmin('notice')" id="dtab-notice" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-left">
+                    <i class="fa-solid fa-bullhorn text-emerald-400 text-sm"></i> <span>Marquee Notice</span>
+                </button>
+            </nav>
+        </div>
+        <div class="text-[10px] text-gray-500 font-bold text-center">HR TV Master v3.0</div>
+    </aside>
+
+    <!-- MOBILE TOP BAR -->
+    <header class="md:hidden bg-[#0d0e14] border-b border-white/5 p-4 sticky top-0 z-40 flex justify-between items-center">
+        <div class="flex items-center gap-2.5">
+            <img src="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png" class="w-7 h-7 rounded-lg object-contain bg-black p-0.5 border border-white/10">
+            <span class="font-black text-sm tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400">HR TV ADMIN</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="mVisitorCount">0</span> Live
+        </div>
+    </header>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0d0e14]/95 border-t border-white/5 backdrop-blur-lg px-2 py-2.5 z-50 flex justify-around items-center select-none">
+        <button type="button" onclick="navAdmin('dashboard')" id="mtab-dashboard" class="nav-btn active flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-chart-pie text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Overview</span>
+        </button>
+        <button type="button" onclick="navAdmin('matches')" id="mtab-matches" class="nav-btn flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-trophy text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Matches</span>
+        </button>
+        <button type="button" onclick="navAdmin('tv')" id="mtab-tv" class="nav-btn flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-desktop text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Live TV</span>
+        </button>
+        <button type="button" onclick="navAdmin('categories')" id="mtab-categories" class="nav-btn flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-shapes text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Category</span>
+        </button>
+        <button type="button" onclick="navAdmin('ads')" id="mtab-ads" class="nav-btn flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-rectangle-ad text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Ads</span>
+        </button>
+        <button type="button" onclick="navAdmin('notice')" id="mtab-notice" class="nav-btn flex flex-col items-center gap-1 p-1">
+            <i class="fa-solid fa-bullhorn text-sm pointer-events-none"></i> <span class="text-[9px] pointer-events-none">Notice</span>
+        </button>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full space-y-6">
+
+        <!-- 1. OVERVIEW & TRAFFIC STATS -->
+        <div id="page-dashboard" class="admin-page active space-y-5">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="admin-card p-4 flex flex-col justify-between border-emerald-500/20">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Live Online</span>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-2xl font-black text-emerald-400" id="dVisitorCount">0</span>
+                        <i class="fa-solid fa-circle-dot text-emerald-500 animate-ping text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="admin-card p-4 flex flex-col justify-between border-pink-500/20">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Today Unique</span>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-2xl font-black text-pink-400" id="statTodayUnique">0</span>
+                        <i class="fa-solid fa-user-check text-pink-500 text-sm"></i>
+                    </div>
+                </div>
+
+                <div class="admin-card p-4 flex flex-col justify-between border-purple-500/20">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Today Views</span>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-2xl font-black text-purple-400" id="statTodayViews">0</span>
+                        <i class="fa-solid fa-eye text-purple-500 text-sm"></i>
+                    </div>
+                </div>
+
+                <div class="admin-card p-4 flex flex-col justify-between border-cyan-500/20">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase">Total App Installs</span>
+                    <div class="flex items-center justify-between mt-1">
+                        <div>
+                            <span class="text-2xl font-black text-cyan-400" id="statTotalInstalls">0</span>
+                            <span class="text-[10px] text-gray-400 block mt-0.5">Today: <b class="text-cyan-300" id="statTodayInstalls">0</b></span>
+                        </div>
+                        <i class="fa-solid fa-download text-cyan-500 text-base"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Past 7 Days Traffic Log -->
+            <div class="admin-card p-5 space-y-3">
+                <h2 class="font-extrabold text-xs text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-pink-400"></i> Past 7 Days Traffic & App Installs History
+                </h2>
+                <div id="sevenDaysTrafficList" class="space-y-1.5">
+                    <p class="text-gray-500 text-xs text-center py-3">Loading analytics history...</p>
+                </div>
+            </div>
+
+            <!-- Stream Click Ranking -->
+            <div class="admin-card p-5 space-y-3">
+                <h2 class="font-extrabold text-xs text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-pink-500"></i> Stream Click Ranking
+                </h2>
+                <div id="analyticsList" class="space-y-2"></div>
+            </div>
+
+            <!-- Recent App Installs Log -->
+            <div class="admin-card p-5 space-y-3">
+                <h2 class="font-extrabold text-xs text-white uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen text-purple-400"></i> Recent PWA App Installs Log
+                </h2>
+                <div id="installsLogList" class="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar">
+                    <p class="text-gray-500 text-xs text-center py-3">No recent install logs.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. LIVE MATCHES SETUP -->
+        <div id="page-matches" class="admin-page space-y-5">
+            <div class="admin-card p-5 md:p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                    <h2 class="font-extrabold text-xs text-pink-400 uppercase tracking-wider">Live Match & Tournament Setup</h2>
+                    <button id="mCancelBtn" onclick="cancelMatchEdit()" class="hidden text-xs text-rose-400 font-bold hover:underline">Cancel Edit</button>
+                </div>
+
+                <form id="matchForm" onsubmit="saveMatch(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Match Title / Tournament</label>
+                            <input type="text" id="mTitle" placeholder="e.g. England vs West Indies" class="admin-input" required>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Badge Tag / Stage (বামপাশের ট্যাগ)</label>
+                            <input type="text" id="mStage" placeholder="e.g. 1st ODI / Qualifier 2 / Final / T20" class="admin-input" required>
+                        </div>
+                    </div>
+
+                    <!-- Teams Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#0c0d12] p-3.5 rounded-2xl border border-white/5">
+                        <div class="space-y-2">
+                            <span class="text-[10px] text-pink-400 font-extrabold uppercase block">Team 1 Details</span>
+                            <input type="text" id="t1Name" placeholder="Team 1 Name (e.g. England)" class="admin-input" required>
+                            <input type="url" id="t1Logo" placeholder="Team 1 Logo URL (PNG)" class="admin-input" required>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="text-[10px] text-purple-400 font-extrabold uppercase block">Team 2 Details</span>
+                            <input type="text" id="t2Name" placeholder="Team 2 Name (e.g. West Indies)" class="admin-input" required>
+                            <input type="url" id="t2Logo" placeholder="Team 2 Logo URL (PNG)" class="admin-input" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Start Date & Time</label>
+                            <input type="datetime-local" id="mStart" class="admin-input" required>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Category / Tournament</label>
+                            <select id="matchCatSelect" class="admin-input" required>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Match Status</label>
+                            <select id="mStatus" class="admin-input">
+                                <option value="UPCOMING">Upcoming</option>
+                                <option value="LIVE">Live Now</option>
+                                <option value="ENDED">Ended</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Stream Servers -->
+                    <div class="space-y-2.5 bg-[#0c0d12] p-3.5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-300 font-semibold">Stream Servers (.m3u8 / Embed / Web URL)</span>
+                            <button type="button" onclick="addMatchServerInput()" class="text-xs text-pink-400 font-bold hover:underline">+ Add Server</button>
+                        </div>
+                        <div id="matchServersContainer" class="space-y-2">
+                            <input type="url" class="match-server-input admin-input" placeholder="Server 1 Stream Link" required>
+                        </div>
+                    </div>
+
+                    <button id="mSubmitBtn" type="submit" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-extrabold py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-pink-500/20">
+                        Publish Match
+                    </button>
+                </form>
+
+                <div class="pt-5 border-t border-white/5 space-y-3">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase">Active Matches in Database</h3>
+                    <div id="adminMatchList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. LIVE TV SETUP -->
+        <div id="page-tv" class="admin-page space-y-5">
+            <div class="admin-card p-5 md:p-6 space-y-4">
+                <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                    <h2 class="font-extrabold text-xs text-purple-400 uppercase tracking-wider">Live TV Channel Setup</h2>
+                    <button id="tvCancelBtn" onclick="cancelTvEdit()" class="hidden text-xs text-rose-400 font-bold hover:underline">Cancel Edit</button>
+                </div>
+
+                <form id="tvForm" onsubmit="saveTv(event)" class="space-y-3.5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Channel Name</label>
+                            <input type="text" id="chName" class="admin-input" placeholder="e.g. T Sports HD" required>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Logo URL</label>
+                            <input type="url" id="chLogo" class="admin-input" placeholder="https://..." required>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-300 font-semibold block mb-1">Category</label>
+                            <select id="tvCatSelect" class="admin-input" required>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2.5 bg-[#0c0d12] p-3.5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-300 font-semibold">TV Stream Server</span>
+                            <button type="button" onclick="addTvServerInput()" class="text-xs text-purple-400 font-bold hover:underline">+ Add Server</button>
+                        </div>
+                        <div id="tvServersContainer" class="space-y-2">
+                            <input type="url" class="tv-server-input admin-input" placeholder="Stream URL (.m3u8)" required>
+                        </div>
+                    </div>
+
+                    <button id="tvSubmitBtn" type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-extrabold py-3.5 rounded-xl text-xs uppercase tracking-wider transition">
+                        Save Channel
+                    </button>
+                </form>
+
+                <div class="pt-5 border-t border-white/5 space-y-3">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase">Active TV Channels</h3>
+                    <div id="adminTvList" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. CATEGORIES SETUP -->
+        <div id="page-categories" class="admin-page space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Event Categories -->
+                <div class="admin-card p-4 space-y-3">
+                    <h2 class="font-bold text-xs text-pink-400 uppercase">Event / League Categories</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="matchCatInput" placeholder="e.g. CRICKET, IPL" class="admin-input">
+                        <button type="button" onclick="addMatchCat()" class="bg-pink-500 text-white px-4 rounded-xl text-xs font-bold shrink-0">Add</button>
+                    </div>
+                    <div id="matchCatList" class="flex flex-wrap gap-2 pt-2"></div>
+                </div>
+
+                <!-- TV Categories -->
+                <div class="admin-card p-4 space-y-3">
+                    <h2 class="font-bold text-xs text-purple-400 uppercase">TV Categories</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="tvCatInput" placeholder="e.g. Sports, News" class="admin-input">
+                        <button type="button" onclick="addTvCat()" class="bg-purple-600 text-white px-4 rounded-xl text-xs font-bold shrink-0">Add</button>
+                    </div>
+                    <div id="tvCatList" class="flex flex-wrap gap-2 pt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. POPUNDER & ADS CONFIG -->
+        <div id="page-ads" class="admin-page space-y-5">
+            <div class="admin-card p-5 md:p-6 space-y-4">
+                <h2 class="font-bold text-xs text-rose-400 uppercase border-b border-white/5 pb-3">Popunder & Direct Ads Settings</h2>
+                <form onsubmit="saveAdsConfig(event)" class="space-y-3.5">
+                    <div>
+                        <label class="text-xs text-gray-300 font-semibold block mb-1">Direct Ad URL (ম্যাচে ক্লিক করলে ওপেন হবে)</label>
+                        <input type="url" id="adUrlInput" placeholder="https://highcpmgate.com/..." class="admin-input">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-300 font-semibold block mb-1">Popunder Script / Tag Code</label>
+                        <textarea id="popunderCodeInput" rows="4" placeholder="<script type='text/javascript' ...></script>" class="admin-input font-mono text-xs"></textarea>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="checkbox" id="adGlobalEnable" class="w-4 h-4 accent-pink-500 cursor-pointer">
+                        <label for="adGlobalEnable" class="text-xs font-bold text-gray-200 cursor-pointer">Enable Global Ads & Popunder</label>
+                    </div>
+                    <button type="submit" class="bg-gradient-to-r from-pink-500 to-rose-600 text-white font-extrabold py-3 px-6 rounded-xl text-xs uppercase tracking-wider transition">
+                        Save Ads Configuration
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6. MARQUEE NOTICE -->
+        <div id="page-notice" class="admin-page space-y-5">
+            <div class="admin-card p-5 md:p-6 space-y-4">
+                <h2 class="font-bold text-xs text-emerald-400 uppercase border-b border-white/5 pb-3">Site Marquee Notice</h2>
+                <form onsubmit="saveSiteNotice(event)" class="space-y-3">
+                    <textarea id="siteNoticeInput" rows="3" class="admin-input leading-relaxed" placeholder="এখানে নোটিশ লিখুন..." required></textarea>
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold py-3 px-6 rounded-xl text-xs uppercase tracking-wider transition">
+                        Update Notice
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_HBGuQSh_GzqrHqHbgdaoBikLZsK3Qqs",
+            authDomain: "new-all-f99f7.firebaseapp.com",
+            databaseURL: "https://new-all-f99f7-default-rtdb.firebaseio.com",
+            projectId: "new-all-f99f7",
+            storageBucket: "new-all-f99f7.firebasestorage.app",
+            messagingSenderId: "1069748173900",
+            appId: "1:1069748173900:web:158d6336c0f4628133c8e9",
+            measurementId: "G-V6DZ37WSBF"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // আইসোলেটেড ডাটাবেজ পাথ
+        const DB_MATCHES = "tinoz_matches";
+        const DB_CHANNELS = "tinoz_tv_channels";
+        const DB_EVENT_CATS = "tinoz_event_categories";
+        const DB_TV_CATS = "tinoz_tv_categories";
+        const DB_ADS = "tinoz_ads_config";
+        const DB_NOTICE = "tinoz_site_notice";
+        const DB_ANALYTICS = "tinoz_analytics";
+
+        let matchesData = {}, tvData = {};
+        let editMatchKey = null, editTvKey = null;
+
+        // ট্রাফিক এবং অনলাইন অ্যানালিটিক্স লিসেনার
+        db.ref(`${DB_ANALYTICS}/live_online`).on("value", snap => {
+            const count = snap.numChildren() || 0;
+            document.getElementById("dVisitorCount").innerText = count;
+            document.getElementById("mVisitorCount").innerText = count;
+        });
+
+        db.ref(`${DB_ANALYTICS}/traffic_overview`).on("value", snap => {
+            const data = snap.val() || {};
+            const today = new Date().toISOString().split('T')[0];
+            
+            const todayData = (data.daily && data.daily[today]) ? data.daily[today] : {};
+            document.getElementById("statTodayViews").innerText = todayData.pageviews || 0;
+            document.getElementById("statTodayUnique").innerText = todayData.unique_visitors || 0;
+            document.getElementById("statTotalInstalls").innerText = data.total_installs || 0;
+            document.getElementById("statTodayInstalls").innerText = todayData.installs || 0;
+
+            // গত ৭ দিনের হিস্ট্রি রেন্ডার
+            const histContainer = document.getElementById("sevenDaysTrafficList");
+            if (data.daily) {
+                const dates = Object.keys(data.daily).sort().reverse().slice(0, 7);
+                histContainer.innerHTML = '';
+                dates.forEach(d => {
+                    const row = data.daily[d];
+                    histContainer.innerHTML += `
+                        <div class="bg-[#0c0d12] p-2.5 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+                            <span class="font-bold text-gray-300"><i class="fa-regular fa-calendar mr-1.5 text-pink-400"></i> ${d}</span>
+                            <div class="flex items-center gap-3 font-semibold text-[11px]">
+                                <span class="text-pink-400">${row.unique_visitors || 0} unique</span>
+                                <span class="text-purple-400">${row.pageviews || 0} views</span>
+                                <span class="text-cyan-400"><i class="fa-solid fa-download text-[10px]"></i> ${row.installs || 0}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
+
+        // সাম্প্রতিক অ্যাপ ইনস্টল লগ লিসেনার
+        db.ref(`${DB_ANALYTICS}/installs_log`).limitToLast(15).on("value", snap => {
+            const list = document.getElementById("installsLogList");
+            if (!list) return;
+            const data = snap.val() || {};
+            const keys = Object.keys(data).reverse();
+            if (keys.length === 0) {
+                list.innerHTML = '<p class="text-gray-500 text-xs text-center py-3">No recent install logs.</p>';
+                return;
+            }
+            list.innerHTML = '';
+            keys.forEach(k => {
+                const item = data[k];
+                list.innerHTML += `
+                    <div class="bg-[#0c0d12] p-2 rounded-xl border border-white/5 flex items-center justify-between text-[11px]">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-cyan-400"></i>
+                            <span class="text-gray-200 font-semibold">${item.device || 'Mobile'} Device</span>
+                        </div>
+                        <span class="text-gray-400 font-mono text-[10px]">${item.date} • ${item.time}</span>
+                    </div>`;
+            });
+        });
+
+        // Navigation Switcher
+        function navAdmin(page) {
+            document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('page-' + page)?.classList.add('active');
+            document.getElementById('dtab-' + page)?.classList.add('active');
+            document.getElementById('mtab-' + page)?.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function formatForDateTimeInput(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return '';
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            } catch(e) {
+                return '';
+            }
+        }
+
+        // ================= MATCHES MANAGEMENT =================
+        function addMatchServerInput(urlVal = '') {
+            const container = document.getElementById('matchServersContainer');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="url" class="match-server-input admin-input" value="${urlVal}" placeholder="Stream Server URL (.m3u8 / Embed)" required>
+                ${container.children.length > 0 ? `<button type="button" onclick="this.parentElement.remove();" class="text-rose-500 p-2"><i class="fa-solid fa-trash"></i></button>` : ''}
+            `;
+            container.appendChild(div);
+        }
+
+        function getMatchServerUrls() {
+            const urls = [];
+            document.querySelectorAll('.match-server-input').forEach(inp => {
+                if (inp.value.trim()) urls.push(inp.value.trim());
+            });
+            return urls;
+        }
+
+        function setMatchServerUrls(urls = []) {
+            const container = document.getElementById('matchServersContainer');
+            container.innerHTML = '';
+            if (urls.length === 0) addMatchServerInput('');
+            else urls.forEach(u => addMatchServerInput(u));
+        }
+
+        window.editMatch = function(key) {
+            const m = matchesData[key];
+            if (!m) return;
+            editMatchKey = key;
+            document.getElementById("mTitle").value = m.title || '';
+            document.getElementById("mStage").value = m.stage || m.matchType || '';
+            document.getElementById("t1Name").value = m.team1Name || '';
+            document.getElementById("t1Logo").value = m.team1Logo || '';
+            document.getElementById("t2Name").value = m.team2Name || '';
+            document.getElementById("t2Logo").value = m.team2Logo || '';
+            document.getElementById("matchCatSelect").value = m.category || '';
+            document.getElementById("mStatus").value = m.status || (m.isLive ? 'LIVE' : 'UPCOMING');
+            document.getElementById("mStart").value = formatForDateTimeInput(m.startTime);
+
+            let srvs = m.servers || [];
+            if (srvs.length === 0 && m.targetUrl) srvs.push(m.targetUrl);
+            setMatchServerUrls(srvs);
+
+            document.getElementById("mSubmitBtn").innerText = "Update Match";
+            document.getElementById("mCancelBtn").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteMatch = function(key) {
+            if (!confirm('Are you sure you want to delete this match?')) return;
+            db.ref(`${DB_MATCHES}/${key}`).remove()
+                .then(() => alert('Match deleted successfully!'))
+                .catch(err => alert('Delete Error: ' + err.message));
+        };
+
+        function cancelMatchEdit() {
+            editMatchKey = null;
+            document.getElementById("matchForm").reset();
+            setMatchServerUrls([]);
+            document.getElementById("mSubmitBtn").innerText = "Publish Match";
+            document.getElementById("mCancelBtn").classList.add("hidden");
+        }
+
+        function saveMatch(e) {
+            e.preventDefault();
+            const srvs = getMatchServerUrls();
+            if (srvs.length === 0) { alert('Please provide at least 1 stream URL'); return; }
+
+            const startRaw = document.getElementById("mStart").value;
+            const statusVal = document.getElementById("mStatus").value;
+
+            let startTimeIso = new Date().toISOString();
+            if (startRaw) {
+                const d = new Date(startRaw);
+                if (!isNaN(d.getTime())) startTimeIso = d.toISOString();
+            }
+
+            const payload = {
+                title: document.getElementById("mTitle").value.trim() || 'Live Match',
+                stage: document.getElementById("mStage").value.trim() || '1st ODI',
+                matchType: document.getElementById("mStage").value.trim() || '1st ODI',
+                team1Name: document.getElementById("t1Name").value.trim() || 'Team 1',
+                team1Logo: document.getElementById("t1Logo").value.trim() || '',
+                team2Name: document.getElementById("t2Name").value.trim() || 'Team 2',
+                team2Logo: document.getElementById("t2Logo").value.trim() || '',
+                startTime: startTimeIso,
+                category: document.getElementById("matchCatSelect").value || 'CRICKET',
+                status: statusVal,
+                isLive: statusVal === 'LIVE',
+                targetUrl: srvs[0] || '',
+                servers: srvs
+            };
+
+            if (editMatchKey) {
+                db.ref(`${DB_MATCHES}/${editMatchKey}`).update(payload)
+                    .then(() => {
+                        alert('Match Updated Successfully!');
+                        cancelMatchEdit();
+                    })
+                    .catch(err => alert('Save Error: ' + err.message));
+            } else {
+                payload.clicks = 0;
+                db.ref(DB_MATCHES).push(payload)
+                    .then(() => {
+                        alert('Match Published Successfully!');
+                        cancelMatchEdit();
+                    })
+                    .catch(err => alert('Save Error: ' + err.message));
+            }
+        }
+
+        db.ref(DB_MATCHES).on("value", snap => {
+            const list = document.getElementById("adminMatchList");
+            if (!list) return;
+            list.innerHTML = "";
+            matchesData = snap.val() || {};
+            
+            const keys = Object.keys(matchesData);
+            if (keys.length === 0) {
+                list.innerHTML = '<p class="text-xs text-gray-500 py-3 col-span-2 text-center">No matches found in database.</p>';
+                return;
+            }
+
+            keys.forEach(k => {
+                const m = matchesData[k];
+                list.innerHTML += `
+                    <div class="bg-[#0c0d12] p-3 rounded-2xl border border-white/5 flex justify-between items-center text-xs">
+                        <div class="truncate">
+                            <span class="text-[9px] text-pink-400 font-extrabold uppercase">${m.category || 'CRICKET'} • ${m.stage || 'MATCH'}</span>
+                            <p class="font-bold text-gray-100 truncate">${m.team1Name || 'T1'} vs ${m.team2Name || 'T2'}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 pl-2">
+                            <button type="button" onclick="editMatch('${k}')" class="text-pink-400 p-1.5 hover:bg-pink-500/10 rounded-lg"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button type="button" onclick="deleteMatch('${k}')" class="text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            renderClickRanking();
+        });
+
+        // ================= LIVE TV MANAGEMENT =================
+        function addTvServerInput(urlVal = '') {
+            const container = document.getElementById('tvServersContainer');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="url" class="tv-server-input admin-input" value="${urlVal}" placeholder="Stream Server URL" required>
+                ${container.children.length > 0 ? `<button type="button" onclick="this.parentElement.remove();" class="text-rose-500 p-2"><i class="fa-solid fa-trash"></i></button>` : ''}
+            `;
+            container.appendChild(div);
+        }
+
+        function getTvServerUrls() {
+            const urls = [];
+            document.querySelectorAll('.tv-server-input').forEach(inp => {
+                if (inp.value.trim()) urls.push(inp.value.trim());
+            });
+            return urls;
+        }
+
+        function setTvServerUrls(urls = []) {
+            const container = document.getElementById('tvServersContainer');
+            container.innerHTML = '';
+            if (urls.length === 0) addTvServerInput('');
+            else urls.forEach(u => addTvServerInput(u));
+        }
+
+        window.editTv = function(key) {
+            const ch = tvData[key];
+            if (!ch) return;
+            editTvKey = key;
+            document.getElementById("chName").value = ch.name || '';
+            document.getElementById("chLogo").value = ch.logo || '';
+            document.getElementById("tvCatSelect").value = ch.category || '';
+            
+            let srvs = ch.servers || [];
+            if (srvs.length === 0 && ch.targetUrl) srvs.push(ch.targetUrl);
+            setTvServerUrls(srvs);
+            
+            document.getElementById("tvSubmitBtn").innerText = "Update Channel";
+            document.getElementById("tvCancelBtn").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteTv = function(key) {
+            if (!confirm('Delete this TV channel?')) return;
+            db.ref(`${DB_CHANNELS}/${key}`).remove()
+                .then(() => alert('Channel deleted!'))
+                .catch(err => alert('Delete Error: ' + err.message));
+        };
+
+        function cancelTvEdit() {
+            editTvKey = null;
+            document.getElementById("tvForm").reset();
+            setTvServerUrls([]);
+            document.getElementById("tvSubmitBtn").innerText = "Save Channel";
+            document.getElementById("tvCancelBtn").classList.add("hidden");
+        }
+
+        function saveTv(e) {
+            e.preventDefault();
+            const srvs = getTvServerUrls();
+            const payload = {
+                name: document.getElementById("chName").value.trim(),
+                logo: document.getElementById("chLogo").value.trim(),
+                category: document.getElementById("tvCatSelect").value || 'Sports',
+                targetUrl: srvs[0] || '',
+                servers: srvs
+            };
+
+            if (editTvKey) {
+                db.ref(`${DB_CHANNELS}/${editTvKey}`).update(payload)
+                    .then(() => {
+                        alert('Channel Updated!');
+                        cancelTvEdit();
+                    })
+                    .catch(err => alert('Save Error: ' + err.message));
+            } else {
+                payload.clicks = 0;
+                db.ref(DB_CHANNELS).push(payload)
+                    .then(() => {
+                        alert('Channel Saved!');
+                        cancelTvEdit();
+                    })
+                    .catch(err => alert('Save Error: ' + err.message));
+            }
+        }
+
+        db.ref(DB_CHANNELS).on("value", snap => {
+            const list = document.getElementById("adminTvList");
+            if (!list) return;
+            list.innerHTML = "";
+            tvData = snap.val() || {};
+
+            const keys = Object.keys(tvData);
+            if (keys.length === 0) {
+                list.innerHTML = '<p class="text-xs text-gray-500 py-3 col-span-3 text-center">No TV channels found.</p>';
+                return;
+            }
+
+            keys.forEach(k => {
+                const ch = tvData[k];
+                list.innerHTML += `
+                    <div class="bg-[#0c0d12] p-2.5 rounded-2xl border border-white/5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2 truncate">
+                            <img src="${ch.logo}" class="w-8 h-8 rounded-lg object-contain bg-black p-1 border border-white/5 shrink-0" onerror="this.src='https://via.placeholder.com/50'">
+                            <div class="truncate">
+                                <p class="font-bold text-gray-100 truncate">${ch.name}</p>
+                                <p class="text-[9px] text-purple-400">${ch.category}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button type="button" onclick="editTv('${k}')" class="text-purple-400 p-1.5"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button type="button" onclick="deleteTv('${k}')" class="text-rose-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            renderClickRanking();
+        });
+
+        // ================= CATEGORIES MANAGEMENT =================
+        function addMatchCat() {
+            const name = document.getElementById("matchCatInput").value.trim().toUpperCase();
+            if (name) {
+                db.ref(DB_EVENT_CATS).push({ name })
+                    .then(() => document.getElementById("matchCatInput").value = "")
+                    .catch(err => alert("Error: " + err.message));
+            }
+        }
+
+        window.deleteEventCat = function(key) {
+            db.ref(`${DB_EVENT_CATS}/${key}`).remove();
+        };
+
+        db.ref(DB_EVENT_CATS).on("value", snap => {
+            const list = document.getElementById("matchCatList");
+            const select = document.getElementById("matchCatSelect");
+            if (!list || !select) return;
+            list.innerHTML = ""; 
+            select.innerHTML = '<option value="">Select Category</option>';
+            const d = snap.val() || {};
+            Object.keys(d).forEach(k => {
+                list.innerHTML += `<span class="bg-[#0c0d12] border border-white/5 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 text-pink-400">${d[k].name} <i onclick="deleteEventCat('${k}')" class="fa-solid fa-xmark text-gray-500 hover:text-rose-400 cursor-pointer"></i></span>`;
+                select.innerHTML += `<option value="${d[k].name}">${d[k].name}</option>`;
+            });
+        });
+
+        function addTvCat() {
+            const name = document.getElementById("tvCatInput").value.trim();
+            if (name) {
+                db.ref(DB_TV_CATS).push({ name })
+                    .then(() => document.getElementById("tvCatInput").value = "")
+                    .catch(err => alert("Error: " + err.message));
+            }
+        }
+
+        window.deleteTvCat = function(key) {
+            db.ref(`${DB_TV_CATS}/${key}`).remove();
+        };
+
+        db.ref(DB_TV_CATS).on("value", snap => {
+            const list = document.getElementById("tvCatList");
+            const select = document.getElementById("tvCatSelect");
+            if (!list || !select) return;
+            list.innerHTML = ""; 
+            select.innerHTML = '<option value="">Select Category</option>';
+            const d = snap.val() || {};
+            Object.keys(d).forEach(k => {
+                list.innerHTML += `<span class="bg-[#0c0d12] border border-white/5 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 text-purple-400">${d[k].name} <i onclick="deleteTvCat('${k}')" class="fa-solid fa-xmark text-gray-500 hover:text-rose-400 cursor-pointer"></i></span>`;
+                select.innerHTML += `<option value="${d[k].name}">${d[k].name}</option>`;
+            });
+        });
+
+        // ================= POPUNDER ADS & NOTICE =================
+        db.ref(DB_ADS).on("value", snap => {
+            const cfg = snap.val() || {};
+            if (document.getElementById("adUrlInput")) document.getElementById("adUrlInput").value = cfg.default_ad_url || '';
+            if (document.getElementById("popunderCodeInput")) document.getElementById("popunderCodeInput").value = cfg.popunder_code || '';
+            if (document.getElementById("adGlobalEnable")) document.getElementById("adGlobalEnable").checked = cfg.global_enabled !== false;
+        });
+
+        function saveAdsConfig(e) {
+            e.preventDefault();
+            const payload = {
+                default_ad_url: document.getElementById("adUrlInput").value.trim(),
+                popunder_code: document.getElementById("popunderCodeInput").value.trim(),
+                global_enabled: document.getElementById("adGlobalEnable").checked
+            };
+            db.ref(DB_ADS).set(payload)
+                .then(() => alert('Ads Configuration Saved!'))
+                .catch(err => alert('Save Error: ' + err.message));
+        }
+
+        db.ref(DB_NOTICE).on("value", snap => {
+            const val = snap.val() || "";
+            const input = document.getElementById("siteNoticeInput");
+            if (input && document.activeElement !== input) input.value = val;
+        });
+
+        function saveSiteNotice(e) {
+            e.preventDefault();
+            const text = document.getElementById("siteNoticeInput").value.trim();
+            db.ref(DB_NOTICE).set(text)
+                .then(() => alert('Notice Updated!'))
+                .catch(err => alert('Save Error: ' + err.message));
+        }
+
+        function renderClickRanking() {
+            const container = document.getElementById("analyticsList");
+            if (!container) return;
+            container.innerHTML = "";
+            let items = [];
+
+            Object.keys(matchesData).forEach(k => {
+                items.push({ name: `${matchesData[k].team1Name || 'T1'} vs ${matchesData[k].team2Name || 'T2'}`, clicks: matchesData[k].clicks || 0, type: 'Match' });
+            });
+            Object.keys(tvData).forEach(k => {
+                items.push({ name: tvData[k].name || 'TV', clicks: tvData[k].clicks || 0, type: 'TV' });
+            });
+
+            items.sort((a, b) => b.clicks - a.clicks);
+
+            if (items.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-3">No stream click data recorded yet.</p>`;
+                return;
+            }
+
+            items.slice(0, 8).forEach(item => {
+                container.innerHTML += `
+                    <div class="bg-[#0c0d12] p-2.5 rounded-xl border border-white/5 flex items-center justify-between text-xs">
+                        <div class="truncate">
+                            <span class="text-[9px] font-extrabold text-pink-400 uppercase mr-1.5">${item.type}</span>
+                            <span class="font-bold text-gray-200">${item.name}</span>
+                        </div>
+                        <span class="font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-lg border border-purple-500/20">${item.clicks} clicks</span>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
