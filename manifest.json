@@ -1,0 +1,25 @@
+{
+  "name": "HR TV - Live Sports Streaming",
+  "short_name": "HR TV",
+  "description": "Watch Free Live Cricket, Football, World Cup & Live Sports TV Channels in HD on HR TV",
+  "start_url": "https://hrtvlive.netlify.app/",
+  "scope": "https://hrtvlive.netlify.app/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08090d",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
