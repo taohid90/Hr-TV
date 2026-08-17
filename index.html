@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>HR TV - লাইভ ক্রিকেট, ফুটবল ও অল স্পোর্টস স্ট্রিম | Watch Live Sports HD</title>
+    <meta name="title" content="HR TV - লাইভ ক্রিকেট, ফুটবল ও অল স্পোর্টস স্ট্রিম | Watch Live Sports HD">
+    <meta name="description" content="HR TV-তে কোনো বাফারিং ছাড়াই ফ্রিতে লাইভ ক্রিকেট, বাংলাদেশ দলের ম্যাচ, ফুটবল বিশ্বকাপ, IPL, BPL, UEFA Champions League এবং দেশি-বিদেশি লাইভ স্পোর্টস টিভি চ্যানেল সম্পূর্ণ HD কোয়ালিটিতে উপভোগ করুন।">
+    <meta name="keywords" content="HR TV, HR TV Live, hrtvlive, hrtvlive.netlify.app, Live Cricket Streaming, IPL Live Stream, Live Football, ICC World Cup, T20 World Cup, T Sports Live, GTV Live, Star Sports HD, Bufferless Sports Streaming, লাইভ ক্রিকেট খেলা">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://hrtvlive.netlify.app/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hrtvlive.netlify.app/">
+    <meta property="og:title" content="HR TV - Watch Live Sports, Cricket & Live TV HD">
+    <meta property="og:description" content="কোনো ল্যাগ ছাড়াই সরাসরি লাইভ ক্রিকেট, ফুটবল এবং আকর্ষণীয় লাইভ টিভি চ্যানেল দেখুন HR TV-তে।">
+    <meta property="og:image" content="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png">
+
+    <!-- Twitter Card -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://hrtvlive.netlify.app/">
+    <meta property="twitter:title" content="HR TV - Live Sports & Cricket Network">
+    <meta property="twitter:description" content="লাইভ ক্রিকেট, ফুটবল ও লাইভ টিভি চ্যানেল দেখুন বাফারলেস এইচডিতে।">
+    <meta property="twitter:image" content="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png">
+
+    <!-- Favicon & PWA Theme -->
+    <meta name="theme-color" content="#0a0a0f">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-title" content="HR TV">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Schema.org JSON-LD Structured Data for Search Engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SportsOrganization",
+      "name": "HR TV Live Sports Network",
+      "alternateName": ["HR TV", "HR TV Live", "hrtvlive"],
+      "url": "https://hrtvlive.netlify.app/",
+      "logo": "https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png",
+      "image": "https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png",
+      "description": "HR TV is a premier live sports streaming platform offering uninterrupted HD broadcasts for Cricket, Football, IPL, BPL, and 24/7 Live TV channels.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://hrtvlive.netlify.app/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Tailwind CSS & FontAwesome Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <style>
+        body { 
+            background: #08090d; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #f1f5f9; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* কার্ডের উন্নত গ্লাস ও শ্যাডো ডিজাইন */
+        .match-card {
+            background: linear-gradient(145deg, #151720 0%, #101218 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .match-card:active {
+            transform: scale(0.97);
+            border-color: rgba(236, 72, 153, 0.4);
+        }
+
+        /* বাঁপাশের ভার্টিক্যাল ব্যাজ */
+        .vertical-badge {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            background: linear-gradient(180deg, #ec4899 0%, #8b5cf6 100%);
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.35);
+        }
+
+        .vertical-badge-live {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.65);
+        }
+
+        /* মাঝখানের নিয়ন VS ব্যাজ */
+        .vs-badge {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(168, 85, 247, 0.25));
+            border: 1px solid rgba(236, 72, 153, 0.5);
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.3);
+        }
+
+        /* টিভি কার্ড ডিজাইন */
+        .tv-channel-card {
+            background: linear-gradient(145deg, #13151c 0%, #0d0e14 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+        .tv-channel-card:hover {
+            border-color: rgba(236, 72, 153, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* টপ ন্যাভ একটিভ স্টাইল */
+        .nav-tab.active {
+            color: #ffffff;
+            font-weight: 800;
+        }
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ec4899, #8b5cf6);
+            border-radius: 3px 3px 0 0;
+            box-shadow: 0 -2px 12px rgba(236, 72, 153, 0.9);
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen relative pb-10 border-x border-gray-900/40">
+
+    <!-- Drawer Overlay -->
+    <div id="drawerOverlay" onclick="toggleDrawer(false)" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+    
+    <!-- Side Drawer -->
+    <aside id="sideDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-[#101117] border-r border-white/5 z-50 transform -translate-x-full transition-transform duration-300 p-5 flex flex-col justify-between">
+        <div class="space-y-6">
+            <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                <div class="flex items-center gap-2.5">
+                    <img src="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png" class="w-8 h-8 rounded-xl object-contain shadow-md shadow-pink-500/20 bg-black p-0.5 border border-white/10">
+                    <span class="font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">HR TV</span>
+                </div>
+                <button onclick="toggleDrawer(false)" class="text-gray-400 hover:text-white p-1 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="installPWA()" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-600/10 border border-pink-500/30 text-xs font-bold text-pink-400 hover:border-pink-500 transition">
+                    <i class="fa-solid fa-circle-arrow-down text-base text-pink-400 animate-bounce"></i>
+                    <span>Install Official App</span>
+                </button>
+                <a href="https://facebook.com" target="_blank" class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#171822] border border-white/5 text-xs font-semibold text-gray-200 hover:border-pink-500/40 transition">
+                    <i class="fa-brands fa-facebook text-blue-500 text-lg"></i>
+                    <span>Facebook Community</span>
+                </a>
+                <a href="https://t.me" target="_blank" class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#171822] border border-white/5 text-xs font-semibold text-gray-200 hover:border-purple-500/40 transition">
+                    <i class="fa-brands fa-telegram text-sky-400 text-lg"></i>
+                    <span>Telegram Channel</span>
+                </a>
+            </div>
+        </div>
+        <div class="text-[10px] text-gray-500 text-center font-bold tracking-wider">HR TV HD • Version 3.0</div>
+    </aside>
+
+    <!-- Header Section -->
+    <header class="sticky top-0 z-40 bg-[#08090d]/95 backdrop-blur-lg border-b border-white/5">
+        <!-- Main Top Bar -->
+        <div id="defaultHeader" class="px-4 py-3 flex justify-between items-center">
+            <!-- Hamburger Menu -->
+            <button onclick="toggleDrawer(true)" class="text-gray-300 text-xl hover:text-white transition">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Brand Logo Center -->
+            <div class="flex items-center gap-2">
+                <h1 class="font-black text-2xl tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#e83a78] via-[#d63384] to-[#a855f7]">
+                    HR TV
+                </h1>
+            </div>
+
+            <!-- Right Actions: App Download, Search & Bell -->
+            <div class="flex items-center gap-2.5">
+                <!-- App Install Button -->
+                <button onclick="installPWA()" class="bg-gradient-to-r from-pink-500/15 to-purple-500/15 hover:from-pink-500/25 hover:to-purple-500/25 text-pink-400 border border-pink-500/30 px-2.5 py-1 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition shadow-sm">
+                    <i class="fa-solid fa-cloud-arrow-down text-pink-400 animate-pulse text-xs"></i>
+                    <span>App</span>
+                </button>
+
+                <button onclick="toggleSearch(true)" class="text-gray-300 hover:text-white p-1 transition"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button onclick="alert('No new notifications!')" class="text-gray-300 hover:text-white p-1 relative transition">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="absolute top-0.5 right-0.5 w-2 h-2 bg-pink-500 rounded-full animate-ping"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar (Toggled) -->
+        <div id="searchHeader" class="hidden px-4 py-2.5 flex items-center gap-2 bg-[#12131a]">
+            <div class="relative w-full">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-gray-400"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search teams, tournament or TV..." class="bg-[#1b1c26] text-xs text-white pl-8 pr-3 py-2 rounded-xl w-full border border-pink-500/40 focus:outline-none">
+            </div>
+            <button onclick="toggleSearch(false)" class="p-2 text-gray-400 hover:text-rose-400 text-base"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Top Navigation Tabs (EVENTS & LIVE TV) -->
+        <div class="grid grid-cols-2 text-center border-t border-white/5 text-xs font-bold text-gray-400">
+            <button onclick="switchTab('events')" id="tab-events" class="nav-tab active relative py-3 flex items-center justify-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-wifi text-sm"></i>
+                <span>EVENTS</span>
+            </button>
+            <button onclick="switchTab('tv')" id="tab-tv" class="nav-tab relative py-3 flex items-center justify-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-desktop text-sm"></i>
+                <span>LIVE TV</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Body -->
+    <main class="px-3.5 pt-4 space-y-6">
+
+        <!-- 1. LIVE EVENTS VIEW -->
+        <div id="view-events" class="view-section active space-y-5">
+            
+            <!-- Site Notice Marquee -->
+            <div id="noticeContainer" class="hidden bg-[#12131a]/80 border border-pink-500/20 rounded-2xl p-2 flex items-center gap-2 overflow-hidden shadow-md">
+                <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-[9px] px-2.5 py-1 rounded-xl shrink-0 flex items-center gap-1">
+                    <i class="fa-solid fa-bullhorn text-[9px]"></i>
+                    <span>NOTICE</span>
+                </div>
+                <marquee id="mainSiteMarquee" scrollamount="4" class="text-xs font-semibold text-gray-200"></marquee>
+            </div>
+
+            <!-- Match Categories Container (Side-by-Side Horizontal Scroll per Category) -->
+            <div id="eventsContainer" class="space-y-6">
+                <!-- Skeleton Loader -->
+                <div class="space-y-3 animate-pulse">
+                    <div class="h-4 bg-gray-800 rounded w-1/3"></div>
+                    <div class="h-32 bg-[#151720] rounded-3xl"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. LIVE TV VIEW -->
+        <div id="view-tv" class="view-section space-y-4">
+            <!-- TV Categories Filter Chips -->
+            <div id="tvCatFilters" class="flex gap-2 overflow-x-auto no-scrollbar py-0.5"></div>
+            
+            <!-- TV Channels Grid -->
+            <div id="tvContainer" class="grid grid-cols-3 gap-3"></div>
+        </div>
+    </main>
+
+    <!-- PWA Install Modal / Guide -->
+    <div id="pwaModalOverlay" onclick="closePwaModal()" class="fixed inset-0 bg-black/80 z-50 hidden backdrop-blur-sm"></div>
+    <div id="pwaModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[88%] max-w-xs bg-[#12131c] border border-pink-500/30 rounded-3xl p-5 z-50 hidden shadow-2xl space-y-4 text-center">
+        <img src="https://i.postimg.cc/bwH0G8w5/file-00000000f86c81fabc31858ba0521022.png" class="w-14 h-14 rounded-2xl mx-auto object-contain shadow-lg shadow-pink-500/30 bg-black p-1 border border-white/10">
+        <div>
+            <h3 class="font-extrabold text-base text-white">Install HR TV App</h3>
+            <p class="text-xs text-gray-400 mt-1">Install on your phone for faster bufferless live sports streaming!</p>
+        </div>
+        <div class="bg-[#0b0c10] p-3 rounded-2xl border border-white/5 text-left text-xs text-gray-300 space-y-1.5">
+            <p><i class="fa-solid fa-ellipsis-vertical text-pink-400 mr-1.5"></i> 1. Tap <b>Menu (Three dots)</b> in your browser.</p>
+            <p><i class="fa-solid fa-mobile-screen-button text-purple-400 mr-1.5"></i> 2. Select <b>"Add to Home screen"</b> or <b>"Install App"</b>.</p>
+        </div>
+        <button onclick="closePwaModal()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">
+            Got It
+        </button>
+    </div>
+
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_HBGuQSh_GzqrHqHbgdaoBikLZsK3Qqs",
+            authDomain: "new-all-f99f7.firebaseapp.com",
+            databaseURL: "https://new-all-f99f7-default-rtdb.firebaseio.com",
+            projectId: "new-all-f99f7",
+            storageBucket: "new-all-f99f7.firebasestorage.app",
+            messagingSenderId: "1069748173900",
+            appId: "1:1069748173900:web:158d6336c0f4628133c8e9",
+            measurementId: "G-V6DZ37WSBF"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ডাটাবেজ পাথ
+        const DB_MATCHES = "tinoz_matches";
+        const DB_CHANNELS = "tinoz_tv_channels";
+        const DB_ADS = "tinoz_ads_config";
+        const DB_NOTICE = "tinoz_site_notice";
+        const DB_ANALYTICS = "tinoz_analytics";
+
+        let matchesData = {}, tvData = {}, adsSettings = {};
+        let selectedTvCat = 'ALL';
+        let searchQuery = "";
+
+        // ================= ট্রাফিক এবং লাইভ ভিজিটর ট্র্যাকিং সিস্টেম =================
+        const uId = localStorage.getItem('hrtv_uid') || ('u_' + Math.random().toString(36).substr(2, 9));
+        localStorage.setItem('hrtv_uid', uId);
+
+        const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        // ১. রিয়েলটাইম লাইভ অনলাইন ট্র্যাকিং (ইউজার বের হয়ে গেলে অটোমেটিক রিমুভ হবে)
+        const presenceRef = db.ref(`${DB_ANALYTICS}/live_online/${uId}`);
+        db.ref('.info/connected').on('value', snap => {
+            if (snap.val() === true) {
+                presenceRef.onDisconnect().remove();
+                presenceRef.set({
+                    user_id: uId,
+                    joined: firebase.database.ServerValue.TIMESTAMP,
+                    device: isMobile ? 'Mobile' : 'Desktop'
+                });
+            }
+        });
+
+        // ২. পেজ ভিউ এবং ইউনিক ভিজিটর কাউন্টার
+        (function recordTrafficStats() {
+            // টোটাল পেজ ভিউ বৃদ্ধি
+            db.ref(`${DB_ANALYTICS}/traffic_overview/total_pageviews`).transaction(c => (c || 0) + 1);
+            db.ref(`${DB_ANALYTICS}/traffic_overview/daily/${todayStr}/pageviews`).transaction(c => (c || 0) + 1);
+
+            // দৈনিক ইউনিক ভিজিটর ট্র্যাকিং
+            const visitedKey = `hrtv_visited_${todayStr}`;
+            if (!localStorage.getItem(visitedKey)) {
+                localStorage.setItem(visitedKey, 'true');
+                db.ref(`${DB_ANALYTICS}/traffic_overview/total_unique_visitors`).transaction(c => (c || 0) + 1);
+                db.ref(`${DB_ANALYTICS}/traffic_overview/daily/${todayStr}/unique_visitors`).transaction(c => (c || 0) + 1);
+            }
+        })();
+
+        // ৩. PWA অ্যাপ ইনস্টল স্বয়ংক্রিয় ট্র্যাকিং
+        window.addEventListener('appinstalled', () => {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // অ্যাডমিন প্যানেলের জন্য ইনস্টল কাউন্টার আপডেট
+            db.ref(`${DB_ANALYTICS}/traffic_overview/total_installs`).transaction(c => (c || 0) + 1);
+            db.ref(`${DB_ANALYTICS}/traffic_overview/daily/${todayStr}/installs`).transaction(c => (c || 0) + 1);
+
+            // ইনস্টল লগ সেভ
+            db.ref(`${DB_ANALYTICS}/installs_log/${uId}`).set({
+                user_id: uId,
+                date: todayStr,
+                time: timeStr,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                device: isMobile ? 'Mobile' : 'Desktop'
+            });
+        });
+
+        // ================= নোটিশ ও অ্যাডস লিসেনার =================
+        db.ref(DB_NOTICE).on("value", snap => {
+            const val = snap.val();
+            const container = document.getElementById("noticeContainer");
+            const marquee = document.getElementById("mainSiteMarquee");
+            if (val && val.trim()) {
+                container.classList.remove("hidden");
+                marquee.innerText = val;
+            } else {
+                container.classList.add("hidden");
+            }
+        });
+
+        db.ref(DB_ADS).on("value", snap => {
+            adsSettings = snap.val() || {};
+            if (adsSettings.popunder_code) injectPopunder(adsSettings.popunder_code);
+        });
+
+        let popunderInjected = false;
+        function injectPopunder(code) {
+            if (popunderInjected || !code) return;
+            popunderInjected = true;
+            const container = document.createElement('div');
+            container.innerHTML = code;
+            Array.from(container.querySelectorAll('script')).forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                if (oldScript.src) newScript.src = oldScript.src;
+                else newScript.textContent = oldScript.textContent;
+                document.body.appendChild(newScript);
+            });
+        }
+
+        // ================= ম্যাচ এবং টিভি ডাটা লোড =================
+        db.ref(DB_MATCHES).on("value", snap => {
+            matchesData = snap.val() || {};
+            renderEvents();
+        });
+
+        db.ref(DB_CHANNELS).on("value", snap => {
+            tvData = snap.val() || {};
+            renderTvFilters();
+            renderTvChannels();
+        });
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`view-${tabName}`)?.classList.add('active');
+            document.getElementById(`tab-${tabName}`)?.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleSearch(show) {
+            const defH = document.getElementById("defaultHeader");
+            const srcH = document.getElementById("searchHeader");
+            const input = document.getElementById("searchInput");
+            if (show) {
+                defH.classList.add("hidden");
+                srcH.classList.remove("hidden");
+                input.focus();
+            } else {
+                srcH.classList.add("hidden");
+                defH.classList.remove("hidden");
+                input.value = "";
+                searchQuery = "";
+                renderEvents();
+                renderTvChannels();
+            }
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById("searchInput").value.trim().toLowerCase();
+            renderEvents();
+            renderTvChannels();
+        }
+
+        function toggleDrawer(show) {
+            const drawer = document.getElementById("sideDrawer");
+            const overlay = document.getElementById("drawerOverlay");
+            if (show) {
+                drawer.classList.remove("-translate-x-full");
+                overlay.classList.remove("hidden");
+            } else {
+                drawer.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+            }
+        }
+
+        function formatMatchTime(dateStr) {
+            if (!dateStr) return "Upcoming";
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                const month = d.toLocaleDateString([], { month: 'short' });
+                const day = d.getDate();
+                const time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                return `${month} ${day}, ${time}`;
+            } catch(e) {
+                return dateStr;
+            }
+        }
+
+        // ================= MATCH EVENTS RENDER (Side-by-Side per Category) =================
+        function renderEvents() {
+            const container = document.getElementById("eventsContainer");
+            container.innerHTML = "";
+
+            const keys = Object.keys(matchesData);
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 space-y-2">
+                        <div class="w-12 h-12 rounded-2xl bg-white/5 mx-auto flex items-center justify-center text-gray-500 text-xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <p class="text-gray-400 text-xs font-semibold">No live events scheduled at this moment</p>
+                    </div>`;
+                return;
+            }
+
+            const grouped = {};
+            keys.forEach(k => {
+                const m = matchesData[k];
+                if (searchQuery && !m.title?.toLowerCase().includes(searchQuery) && !m.team1Name?.toLowerCase().includes(searchQuery) && !m.team2Name?.toLowerCase().includes(searchQuery)) return;
+                
+                const cat = (m.category || "CRICKET").toUpperCase();
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push({ key: k, data: m });
+            });
+
+            const catKeys = Object.keys(grouped);
+            if (catKeys.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 py-12 text-xs">No matching events found</div>`;
+                return;
+            }
+
+            catKeys.forEach(catName => {
+                const matches = grouped[catName];
+
+                let cardsHtml = '';
+                matches.forEach(item => {
+                    const k = item.key;
+                    const m = item.data;
+                    const stageTag = m.stage || m.matchType || "MATCH";
+                    const isLive = m.isLive === true || m.status === 'LIVE';
+
+                    cardsHtml += `
+                        <div onclick="handleItemClick('${DB_MATCHES}', '${k}', '${m.targetUrl || ''}')" class="match-card relative rounded-3xl p-3.5 flex items-center justify-between min-w-[305px] w-[305px] h-[130px] shrink-0 cursor-pointer overflow-hidden select-none">
+                            
+                            <!-- Left Vertical Pill Badge -->
+                            <div class="h-full w-7 rounded-2xl ${isLive ? 'vertical-badge-live' : 'vertical-badge'} flex items-center justify-center text-[10px] font-black tracking-widest text-white uppercase shrink-0 py-1 shadow-md">
+                                ${isLive ? '● LIVE' : stageTag}
+                            </div>
+
+                            <!-- Match Center Area -->
+                            <div class="flex-1 px-2.5 flex flex-col items-center justify-between h-full relative">
+                                
+                                <!-- Top Date Badge -->
+                                <div class="bg-[#0b0c10]/90 border border-white/10 text-gray-200 text-[10px] font-bold px-3 py-0.5 rounded-full z-10 shadow-sm flex items-center gap-1.5">
+                                    <i class="fa-regular fa-clock text-[9px] text-pink-400"></i>
+                                    <span>${formatMatchTime(m.startTime)}</span>
+                                </div>
+
+                                <!-- Teams & Glowing VS -->
+                                <div class="w-full flex items-center justify-between my-auto z-10">
+                                    
+                                    <!-- Team 1 -->
+                                    <div class="flex flex-col items-center gap-1 w-5/12">
+                                        <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center p-1 shadow-md shadow-black/50 overflow-hidden border border-white/20">
+                                            <img src="${m.team1Logo || 'https://via.placeholder.com/60'}" class="w-full h-full object-contain rounded-full" onerror="this.src='https://via.placeholder.com/60'">
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-100 truncate max-w-[95px] text-center tracking-tight">${m.team1Name || 'Team 1'}</span>
+                                    </div>
+
+                                    <!-- Neon Glow VS Center -->
+                                    <div class="w-2/12 flex items-center justify-center">
+                                        <span class="vs-badge text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400 font-black text-xs px-2 py-0.5 rounded-xl tracking-wider">VS</span>
+                                    </div>
+
+                                    <!-- Team 2 -->
+                                    <div class="flex flex-col items-center gap-1 w-5/12">
+                                        <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center p-1 shadow-md shadow-black/50 overflow-hidden border border-white/20">
+                                            <img src="${m.team2Logo || 'https://via.placeholder.com/60'}" class="w-full h-full object-contain rounded-full" onerror="this.src='https://via.placeholder.com/60'">
+                                        </div>
+                                        <span class="text-xs font-bold text-gray-100 truncate max-w-[95px] text-center tracking-tight">${m.team2Name || 'Team 2'}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>`;
+                });
+
+                container.innerHTML += `
+                    <div class="space-y-2.5">
+                        <div class="flex items-center justify-between px-1">
+                            <div>
+                                <h2 class="font-extrabold text-sm tracking-wide text-white uppercase flex items-center gap-1.5">
+                                    <span class="w-1.5 h-3.5 bg-gradient-to-b from-pink-500 to-purple-600 rounded-full inline-block"></span>
+                                    <span>${catName}</span>
+                                </h2>
+                                <p class="text-[10px] text-gray-400 font-semibold pl-3">Upcoming Matches</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 px-1 snap-x">
+                            ${cardsHtml}
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // ================= LIVE TV DESIGN =================
+        function renderTvFilters() {
+            const filterContainer = document.getElementById("tvCatFilters");
+            if (!filterContainer) return;
+
+            const cats = new Set();
+            Object.keys(tvData).forEach(k => {
+                if (tvData[k].category) cats.add(tvData[k].category);
+            });
+
+            let html = `<button onclick="filterTvCat('ALL')" class="px-3.5 py-1 rounded-full text-xs font-bold transition shrink-0 ${selectedTvCat === 'ALL' ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md shadow-pink-500/20' : 'bg-[#12131a] text-gray-400 border border-white/5'}">All Channels</button>`;
+            
+            cats.forEach(c => {
+                html += `<button onclick="filterTvCat('${c}')" class="px-3.5 py-1 rounded-full text-xs font-bold transition shrink-0 ${selectedTvCat === c ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-md shadow-pink-500/20' : 'bg-[#12131a] text-gray-400 border border-white/5'}">${c}</button>`;
+            });
+
+            filterContainer.innerHTML = html;
+        }
+
+        function filterTvCat(cat) {
+            selectedTvCat = cat;
+            renderTvFilters();
+            renderTvChannels();
+        }
+
+        function renderTvChannels() {
+            const container = document.getElementById("tvContainer");
+            container.innerHTML = "";
+
+            const keys = Object.keys(tvData);
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center text-gray-500 py-12 text-xs">No TV channels available</div>`;
+                return;
+            }
+
+            let count = 0;
+            keys.forEach(k => {
+                const c = tvData[k];
+                if (selectedTvCat !== 'ALL' && c.category !== selectedTvCat) return;
+                if (searchQuery && !c.name?.toLowerCase().includes(searchQuery)) return;
+
+                count++;
+                container.innerHTML += `
+                    <div onclick="handleItemClick('${DB_CHANNELS}', '${k}', '${c.targetUrl || ''}')" class="tv-channel-card p-3 rounded-2xl flex flex-col items-center justify-between cursor-pointer aspect-square relative overflow-hidden group">
+                        <div class="w-12 h-12 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center p-2 group-hover:scale-105 transition shadow-inner">
+                            <img src="${c.logo || 'https://via.placeholder.com/80'}" class="w-full h-full object-contain" onerror="this.src='https://via.placeholder.com/80?text=TV'">
+                        </div>
+                        <div class="w-full text-center">
+                            <span class="text-xs font-bold text-gray-200 truncate block group-hover:text-pink-400 transition">${c.name || 'Channel'}</span>
+                            <span class="text-[9px] text-gray-500 font-semibold uppercase block mt-0.5">${c.category || 'Live'}</span>
+                        </div>
+                    </div>`;
+            });
+
+            if (count === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center text-gray-500 py-8 text-xs">No channels in this category</div>`;
+            }
+        }
+
+        // ================= CLICK HANDLER (Clicks Metric + Popunder + Stream) =================
+        function handleItemClick(dbPath, key, directUrl) {
+            // এডমিন প্যানেলের ক্লিকের ট্র্যাকিং
+            db.ref(`${dbPath}/${key}/clicks`).transaction(c => (c || 0) + 1);
+
+            const adUrl = adsSettings.default_ad_url || adsSettings.ad_url;
+            const targetPlayer = directUrl && directUrl.startsWith('http') ? directUrl : `player.html?type=${dbPath}&id=${key}`;
+
+            if (adUrl && adsSettings.global_enabled !== false) {
+                const adWindow = window.open(adUrl, '_blank');
+                if (adWindow) {
+                    adWindow.blur();
+                    window.focus();
+                }
+            }
+
+            window.location.href = targetPlayer;
+        }
+
+        // ================= PWA APP INSTALL LOGIC =================
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+            } else {
+                document.getElementById("pwaModal").classList.remove("hidden");
+                document.getElementById("pwaModalOverlay").classList.remove("hidden");
+            }
+        }
+
+        function closePwaModal() {
+            document.getElementById("pwaModal").classList.add("hidden");
+            document.getElementById("pwaModalOverlay").classList.add("hidden");
+        }
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
